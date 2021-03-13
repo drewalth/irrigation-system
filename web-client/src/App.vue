@@ -1,7 +1,11 @@
 <template>
   <div class="app">
     <h1>Irrigation System</h1>
-    <button @click="valveOpen = !valveOpen" :class="{'active': valveOpen}">
+    <template v-if="loading">
+      establishing connection...
+    </template>
+    <template v-else-if="connected">
+      <button @click="valveOpen = !valveOpen" :class="{'active': valveOpen}">
       <template v-if="valveOpen">
         Close Valve
       </template>
@@ -9,33 +13,52 @@
         Open Valve
       </template>
     </button>
+    </template>
+    <template v-else>
+     Error: Failed to connect.
+    </template>
   </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
-import http from "@/http"
+import {openValve, closeValve, ping} from "@/controllers"
 @Options({
   props: {
     msg: String
   },
   data: () => ({
-    valveOpen: false
+    valveOpen: false,
+    connected: false,
+    loading: false
   }),
   watch: {
     valveOpen: {
       async handler(val) {
         try {
           if(val) {
-            await http.get('/valve-close').then(res => res.data)
+            await closeValve()
           } else {
-            await http.get('/valve-open').then(res => res.data)
+            await openValve()
           }
         } catch (error) {
           console.log(`error`, error)
         }
       }
     }
+  },
+  methods: {
+    async pingSystem () {
+      try {
+        await ping()
+        this.connected = true
+      } catch (error) {
+        console.log(`error`, error)
+      }
+    }
+  },
+  created() {
+    this.pingSystem()
   }
 })
 export default class HelloWorld extends Vue {
@@ -46,6 +69,12 @@ export default class HelloWorld extends Vue {
 <style scoped lang="scss">
 .app {
   font-family: sans-serif;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
   h1 {
     font-size: 2.5rem;
   }
