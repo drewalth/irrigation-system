@@ -1,0 +1,6 @@
+api/dist/
+web-client/dist/
+api/node_modules/
+web-client/node_modules/
+
+*.env
