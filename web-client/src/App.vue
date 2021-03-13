@@ -1,29 +1,64 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div class="app">
+    <h1>Irrigation System</h1>
+    <button @click="valveOpen = !valveOpen" :class="{'active': valveOpen}">
+      <template v-if="valveOpen">
+        Close Valve
+      </template>
+      <template v-else>
+        Open Valve
+      </template>
+    </button>
   </div>
-  <router-view/>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script lang="ts">
+import { Options, Vue } from 'vue-class-component'
+import http from "@/http"
+@Options({
+  props: {
+    msg: String
+  },
+  data: () => ({
+    valveOpen: false
+  }),
+  watch: {
+    valveOpen: {
+      async handler(val) {
+        try {
+          if(val) {
+            await http.get('/valve-close').then(res => res.data)
+          } else {
+            await http.get('/valve-open').then(res => res.data)
+          }
+        } catch (error) {
+          console.log(`error`, error)
+        }
+      }
+    }
+  }
+})
+export default class HelloWorld extends Vue {
+  msg!: string
 }
+</script>
 
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
+<style scoped lang="scss">
+.app {
+  font-family: sans-serif;
+  h1 {
+    font-size: 2.5rem;
+  }
+  button {
+    height: 50px;
+    width: 150px;
+    font-size: 1.25rem;
+    border-radius: 0;
+    border: none;
+    background-color: #48C9B0;
+    color: #FDFEFE;
+    &.active {
+      background-color: #5DADE2;
     }
   }
 }
