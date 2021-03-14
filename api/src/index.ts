@@ -1,7 +1,14 @@
+import dotenv from 'dotenv'
+dotenv.config()
+const apiPort = process.env.PORT || 3000
 import express from 'express'
 import routes from "./routes"
+import middleware from "./middleware"
 import cors from "cors"
 import helmet from 'helmet'
+import db from "./db/db.json"
+import { initSystem, networkInfo } from "./lib"
+import { valveController } from "./controllers"
 const app = express()
 
 app.use(cors({
@@ -11,8 +18,24 @@ app.use(cors({
 
 app.use(helmet())
 
+middleware(app)
 routes(app)
+initSystem()
 
-app.listen(3000, () => {
-  console.log('App listening on port 3000.')
+const handleShutdown = async (error) => {
+  console.log('-----------\nGracefully shutting down...\n')
+  console.log({
+    db,
+    error
+  })
+  await valveController(false)
+  console.log('Safely shutdown.\n-------------')
+  process.exit(0)
+}
+
+app.listen(apiPort, () => {
+  console.log(`Device API: http://${networkInfo.wlan0 && networkInfo.wlan0[0]}:${apiPort}`)
 })
+
+process.on('SIGINT', handleShutdown)
+process.on('uncaughtException', handleShutdown)

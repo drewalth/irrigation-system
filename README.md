@@ -8,6 +8,9 @@
 # update package.json
 scp package.json pi@192.168.86.40:/home/pi/app/package.json
 
+# update env
+scp .env pi@192.168.86.40:/home/pi/app/.env 
+
 # build and upload
 npm run build && cd dist && zip -r app.zip . && scp app.zip pi@192.168.86.40:/home/pi/app
 
@@ -24,3 +27,6 @@ unzip app.zip
 npm install --production
 ```
 
+```
+ssh pi@192.168.86.40
+```

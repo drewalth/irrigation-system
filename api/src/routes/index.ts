@@ -1,9 +1,11 @@
 import ping from "./ping"
 import valve from "./valve"
+import db from "./db"
 
 const routes = [
   ping,
-  valve
+  valve,
+  db
 ]
 
 export = (app) => {
