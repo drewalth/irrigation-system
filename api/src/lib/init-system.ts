@@ -1,5 +1,5 @@
 
-import { valveController, getWeather, rainSensor, laser } from "../controllers"
+import { valveController, getWeather, rainSensor } from "../controllers"
 import moment from 'moment'
 
 let systemInterval
@@ -31,7 +31,6 @@ const isTimeBetween = (startTime: string, duration: number): boolean => {
 
 const runIrrigationSystem = async () => {
 
-  await laser(true)
   isRaining = await rainSensor()
 
   // pine colorado coordinates
@@ -70,6 +69,5 @@ export const initSystem = async () => {
 }
 
 process.on('SIGINT', () => {
-  laser()
   clearInterval(systemInterval)
 })
