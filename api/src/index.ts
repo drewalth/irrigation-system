@@ -6,7 +6,6 @@ import routes from "./routes"
 import middleware from "./middleware"
 import cors from "cors"
 import helmet from 'helmet'
-import db from "./db/db.json"
 import { initSystem, networkInfo } from "./lib"
 import { valveController } from "./controllers"
 const app = express()
@@ -24,10 +23,7 @@ initSystem()
 
 const handleShutdown = async (error) => {
   console.log('-----------\nGracefully shutting down...\n')
-  console.log({
-    db,
-    error
-  })
+  console.log(error)
   await valveController(false)
   console.log('Safely shutdown.\n-------------')
   process.exit(0)
@@ -37,5 +33,6 @@ app.listen(apiPort, () => {
   console.log(`Device API: http://${networkInfo.wlan0 && networkInfo.wlan0[0]}:${apiPort}`)
 })
 
+process.on('unhandledRejection', handleShutdown)
 process.on('SIGINT', handleShutdown)
 process.on('uncaughtException', handleShutdown)

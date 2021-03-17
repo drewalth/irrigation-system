@@ -1,1 +1,0 @@
-Store data in local file incase power is lost we have hard reference on reboot.

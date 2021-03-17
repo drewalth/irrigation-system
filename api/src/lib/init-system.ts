@@ -1,64 +1,75 @@
 
-import { valveController, getWeather } from "../controllers"
-import db from "../db/db.json"
+import { valveController, getWeather, rainSensor, laser } from "../controllers"
 import moment from 'moment'
-import updateConfigFile from "./update-config"
 
-const valveOpenDuration = 60000 / 2
 let systemInterval
 
-const waterPlants = async () => {
- 
-  await valveController(true)
-  await new Promise(resolve => setTimeout(resolve, valveOpenDuration))
-  await valveController(false)
+let timeSlots = [
+  {
+    startTime: '05:45:00',
+    valveOpenDuration: (60000 * 30),
+    active: false
+  },
+  {
+    startTime: '20:00:00',
+    valveOpenDuration: (60000 * 30),
+    active: false
+  }
+]
 
-  const now = moment(new Date())
-  const scheduledWatering = moment(now).add(10, 'minutes')
+let isRaining = false
+let rainCheckTimer
 
-  updateConfigFile({
-    scheduledWatering
-  })
-  console.log(`Next Watering: ${moment(scheduledWatering).format('LLLL')}`)
+const isTimeBetween = (startTime: string, duration: number): boolean => {
+  const format = 'hh:mm:ss'
+  const time = moment(),
+    beforeTime = moment(startTime, format),
+    afterTime = moment(startTime, format).add((duration / 60000), 'minutes');
+
+  return time.isBetween(beforeTime, afterTime)
 }
 
-const systemLoop = async () => {
+const runIrrigationSystem = async () => {
 
-  try {
+  await laser(true)
+  isRaining = await rainSensor()
 
-    const timeSince = moment(new Date()).diff(db.scheduledWatering).toString()
-console.log(`timeSince`, timeSince)
-    if (timeSince.charAt(0) === '-') {
-      console.log('not time to water...')
-      return
+  // pine colorado coordinates
+  const weatherResults = await getWeather('39.463330', '-105.372220')
+
+  const chanceOfPrecipitation = Math.floor(((weatherResults.hourly.map(hourlyReading => hourlyReading.pop).reduce((a: number, b: number) => a + b, 0) / weatherResults.hourly.length) * 100))
+
+  timeSlots.forEach(async (slot, index) => {
+    if (!slot.active && !isRaining && isTimeBetween(slot.startTime, slot.valveOpenDuration) && (chanceOfPrecipitation < 200)) {
+      timeSlots[index].active = true
+
+      rainCheckTimer = setInterval(async () => {
+        isRaining = await rainSensor()
+
+        if (isRaining) {
+          await valveController(false)
+          timeSlots[index].active = false
+          clearInterval(rainCheckTimer)
+        }
+
+      }, 5000)
+
+
+      await valveController(true)
+      await new Promise(resolve => setTimeout(resolve, slot.valveOpenDuration))
+      await valveController(false)
+      timeSlots[index].active = false
+      clearInterval(rainCheckTimer)
     }
-
-    console.log('-------------------\n\nFetching weather report\n\n-------------------')
-
-    // pine colorado coordinates
-    const weatherResults = await getWeather('39.463330', '-105.372220')
-
-    updateConfigFile({
-      weatherResults
-    })
-
-    const chanceOfPrecipitation = Math.floor(((weatherResults.hourly.map(hourlyReading => hourlyReading.pop).reduce((a: number, b: number) => a + b, 0) / weatherResults.hourly.length) * 100))
-
-    if (chanceOfPrecipitation > 75) return
-
-    await waterPlants()
-    
-  } catch (error) {
-    console.log(`error`, error)
-  }
+  })
 }
 
 export const initSystem = async () => {
-  console.log('System Loop Started: ', moment(new Date()).format("LLLL"))
-  await systemLoop()
-  setInterval(systemLoop, ((60000) + 10)) // run every 8 hours? :: 60000 * 480
+  await runIrrigationSystem()
+  systemInterval = setInterval(runIrrigationSystem, 30000)
 }
 
 process.on('SIGINT', () => {
+  laser()
   clearInterval(systemInterval)
 })

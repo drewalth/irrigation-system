@@ -12,21 +12,11 @@ scp package.json pi@192.168.86.40:/home/pi/app/package.json
 scp .env pi@192.168.86.40:/home/pi/app/.env 
 
 # build and upload
-npm run build && cd dist && zip -r app.zip . && scp app.zip pi@192.168.86.40:/home/pi/app
+npm run build && cd dist && zip -r app.zip . && scp app.zip pi@192.168.86.40:/home/pi/app && cd .. && scp package.json pi@192.168.86.40:/home/pi/app/package.json && scp .env pi@192.168.86.40:/home/pi/app/.env
 
-# unzip
 ssh pi@192.168.86.40
 
-cd app && unzip app.zip .
+# from pi /app
+unzip app.zip && npm install --production && node index.js
 
-# ssh into the pi then remove app dir
-rm -rf app/
-
-unzip app.zip
-
-npm install --production
-```
-
-```
-ssh pi@192.168.86.40
 ```
