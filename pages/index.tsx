@@ -1,8 +1,7 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
 import { useState, useEffect } from 'react'
-import { initSystem} from "./api/lib"
-
+import { Layout, Switch } from 'antd'
+import 'antd/dist/antd.css';
+const {Header, Footer, Content} = Layout
 interface IData {
   pong: string
 }
@@ -15,15 +14,14 @@ export default function Home() {
   })
   const [error, setError] = useState()
 
-  const toggleValve = (active = true) => {
-    console.log(active)
+  const toggleValve = (active: boolean) => {
     fetch(`/api/valve?open=${active}`).then(res => res.json()).then(data => setData(data))
   }
 
   const load = async () => {
     try {
       setLoading(true)
-
+      await new Promise(resolve => setTimeout(resolve, 2000))
       fetch('/api/valve').then(res => res.json()).then(data => setData(data))
     } catch (error) {
       setError(error)
@@ -39,28 +37,20 @@ export default function Home() {
 
 
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      {loading && (
-        <h2>loading</h2>
-      )}
-
-      {!loading && Object.keys(data).length > 0 ? (
-        <div>{data.pong}</div>
-      ) : (
-          <div>Something went wrong</div>
-      )}
-      
-      <button onClick={() => {
-        toggleValve()
-      }}>
-
-        Toggle
-      </button>
-
-    </div>
+    <>
+      <Layout>
+        <Header>
+          Header
+        </Header>
+        <Content>
+          <div>
+            <label htmlFor="switch" style={{marginRight: '8px'}}>Valve Active</label>
+            <Switch loading={loading} onChange={toggleValve} />
+         </div>
+        </Content>
+        <Footer>Footer</Footer>
+      </Layout>
+    </>
+    
   )
 }
