@@ -18,7 +18,9 @@ export const soilSensor = async (): Promise<any> => {
 
     const reading = await rpio.read(rainActivePin)
 
-    return (reading === 0)
+    console.log('reading :>> ', reading);
+
+    return reading
 
   } catch (error) {
     console.log(`error`, error)
