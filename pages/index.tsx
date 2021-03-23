@@ -9,6 +9,7 @@ interface IData {
 export default function Home() {
 
   const [loading, setLoading] = useState(false)
+  const [soilReading, setSoilReading] = useState(false)
   const [data, setData] = useState<IData>({
     pong: ''
   })
@@ -30,8 +31,13 @@ export default function Home() {
     }
   }
 
+  const getSoilReading = async () => {
+    fetch('/api/soil').then(res => res.json()).then(data => setSoilReading(data))
+  }
+
   useEffect(() => {
     fetch('/api/init')
+    getSoilReading()
     load()
   }, [])
 
@@ -46,11 +52,16 @@ export default function Home() {
           <div>
             <label htmlFor="switch" style={{marginRight: '8px'}}>Valve Active</label>
             <Switch loading={loading} onChange={toggleValve} />
-         </div>
+          </div>
+          
+
+          {soilReading && (
+            <div>soilReading</div>
+          )}
         </Content>
         <Footer>Footer</Footer>
       </Layout>
     </>
-    
+
   )
 }

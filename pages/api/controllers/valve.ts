@@ -1,4 +1,3 @@
-import fs from 'fs'
 import rpio from "rpio"
 import moment from 'moment'
 const activePin = 16

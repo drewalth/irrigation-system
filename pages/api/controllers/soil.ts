@@ -1,5 +1,5 @@
 import rpio from 'rpio'
-const rainActivePin = 11
+const rainActivePin = 22
 
 rpio.init({
   mock: process.env.NODE_ENV === 'development' ? 'raspi-3' : undefined
@@ -9,7 +9,7 @@ rpio.init({
  * 
  * @param {boolean} active whether or not the solenoid valve is open
  */
-export const rainSensor = async (): Promise<any> => {
+export const soilSensor = async (): Promise<any> => {
 
   if (process.env.NODE_ENV === 'development') return false
   try {
