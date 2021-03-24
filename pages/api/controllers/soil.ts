@@ -1,28 +1,12 @@
 import rpio from 'rpio'
-const rainActivePin = 22
+const activePins = [22,36,33]
 
 rpio.init({
   mock: process.env.NODE_ENV === 'development' ? 'raspi-3' : undefined
 })
 
-/**
- * 
- * @param {boolean} active whether or not the solenoid valve is open
- */
-export const soilSensor = async (): Promise<any> => {
+export const getSoilReadings = async () => {
 
-  if (process.env.NODE_ENV === 'development') return false
-  try {
-
-    rpio.open(rainActivePin, rpio.INPUT);
-
-    const reading = await rpio.read(rainActivePin)
-
-    console.log('reading :>> ', reading);
-
-    return reading
-
-  } catch (error) {
-    console.log(`error`, error)
-  }
+  await Promise.all(activePins.map(p => rpio.open(p, rpio.INPUT)))
+  return Promise.all(activePins.map(pin => rpio.read(pin))).then(res => res)
 }
