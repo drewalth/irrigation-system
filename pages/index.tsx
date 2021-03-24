@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Layout, Switch } from 'antd'
+import { Layout, Switch, List, Typography, Row, Col } from 'antd'
 import 'antd/dist/antd.css';
 const {Header, Footer, Content} = Layout
 interface IData {
@@ -9,7 +9,8 @@ interface IData {
 export default function Home() {
 
   const [loading, setLoading] = useState(false)
-  const [soilReading, setSoilReading] = useState(false)
+  const [soilReadings, setSoilReading] = useState([])
+  const [soilReadingsLoading, setSoilReadingsLoading] = useState(false)
   const [data, setData] = useState<IData>({
     pong: ''
   })
@@ -19,26 +20,22 @@ export default function Home() {
     fetch(`/api/valve?open=${active}`).then(res => res.json()).then(data => setData(data))
   }
 
-  const load = async () => {
-    try {
-      setLoading(true)
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      fetch('/api/valve').then(res => res.json()).then(data => setData(data))
-    } catch (error) {
-      setError(error)
-    } finally {
-      setLoading(false)
-    }
+  const getSoilReadings = () => {
+    setSoilReadingsLoading(true)
+    fetch('/api/soil').then(res => res.json()).then(data => setSoilReading(data)).finally(() => setSoilReadingsLoading(false))
   }
 
-  const getSoilReading = async () => {
-    fetch('/api/soil').then(res => res.json()).then(data => setSoilReading(data))
+  const soilReadingOptimal = (reading:number) => {
+    return (reading === 0)
+  }
+
+  const initializeSystem = () => {
+    fetch('/api/init')
   }
 
   useEffect(() => {
-    fetch('/api/init')
-    getSoilReading()
-    load()
+    initializeSystem()
+    getSoilReadings()
   }, [])
 
 
@@ -49,17 +46,20 @@ export default function Home() {
           Header
         </Header>
         <Content>
-          <div>
-            <label htmlFor="switch" style={{marginRight: '8px'}}>Valve Active</label>
-            <Switch loading={loading} onChange={toggleValve} />
-          </div>
-          
-
-          {soilReading && (
-            <div>soilReading</div>
-          )}
+          <Row>
+            <Col span={14} offset={4}>
+              <div>
+                <label htmlFor="switch" style={{marginRight: '8px'}}>Valve Active</label>
+                <Switch loading={loading} onChange={toggleValve} />
+              </div>
+              <List bordered
+                    dataSource={soilReadings}
+                    header={<Typography.Title level={3}>Soil Sensors</Typography.Title> }
+                    renderItem={(item,index) => <List.Item>Sensor {index + 1} {soilReadingOptimal(item) ? 'good' : 'bad'}</List.Item>}
+              />
+            </Col>
+          </Row>
         </Content>
-        <Footer>Footer</Footer>
       </Layout>
     </>
 

@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "export NODE_ENV=development && next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "export NODE_ENV=production && next start"
   },
   "dependencies": {
     "antd": "^4.14.0",
