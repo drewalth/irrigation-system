@@ -1,22 +1,19 @@
 # irrigation-system
+
+A [Next.js](https://nextjs.org/) app built with [Typescript](https://www.typescriptlang.org/) and [rpio](https://www.npmjs.com/package/rpio) to control a DIY irrigation system from a Raspberry Pi. Inspired by this guide on Instructables, [Raspberry Pi Controlled Irrigation System](https://www.instructables.com/Raspberry-Pi-Controlled-Irrigation-System/). 
+
+## Getting Started
  
-## API
+```bash
+# install dependencies
+npm ci
 
-### Build + Deploy
+# start development
+npm run dev
 
-```
-# update package.json
-scp package.json pi@192.168.86.40:/home/pi/app/package.json
+# compile for prod
+npm run build
 
-# update env
-scp .env pi@192.168.86.40:/home/pi/app/.env 
-
-# build and upload
-npm run build && cd dist && zip -r app.zip . && scp app.zip pi@192.168.86.40:/home/pi/app && cd .. && scp package.json pi@192.168.86.40:/home/pi/app/package.json && scp .env pi@192.168.86.40:/home/pi/app/.env
-
-ssh pi@192.168.86.40
-
-# from pi /app
-unzip app.zip && npm install --production && node index.js
-
+# start prod 
+npm start 
 ```

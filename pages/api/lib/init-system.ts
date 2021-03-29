@@ -20,6 +20,8 @@ let timeSlots = [
 let isRaining = false
 let rainCheckTimer
 
+const {LATITUDE, LONGITUDE} = process.env
+
 const isTimeBetween = (startTime: string, duration: number): boolean => {
   const format = 'hh:mm:ss'
   const time = moment(),
@@ -33,8 +35,7 @@ const runIrrigationSystem = async () => {
 
   isRaining = await rainSensor()
 
-  // pine colorado coordinates
-  const weatherResults = await getWeather('39.463330', '-105.372220')
+  const weatherResults = await getWeather(LATITUDE, LONGITUDE)
 
   const chanceOfPrecipitation = Math.floor(((weatherResults.hourly.map(hourlyReading => hourlyReading.pop).reduce((a: number, b: number) => a + b, 0) / weatherResults.hourly.length) * 100))
 
@@ -65,7 +66,7 @@ const runIrrigationSystem = async () => {
 
 export const initSystem = async () => {
   await runIrrigationSystem()
-  systemInterval = setInterval(runIrrigationSystem, 30000)
+  systemInterval = setInterval(runIrrigationSystem, (60000 * 2))
 }
 
 process.on('SIGINT', () => {

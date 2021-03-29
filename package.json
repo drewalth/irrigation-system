@@ -1,7 +1,9 @@
 {
-  "name": "irrigation-system-next",
+  "name": "irrigation-system",
+  "author": "Drew Althage",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "repository": "https://github.com/drewalth/irrigation-system",
   "scripts": {
     "dev": "export NODE_ENV=development && next dev",
     "build": "next build",
@@ -19,5 +21,9 @@
     "@types/node": "^14.14.35",
     "@types/react": "^17.0.3",
     "typescript": "^4.2.3"
+  },
+  "engines": {
+    "node": "14.16.0",
+    "npm": "7.7.5"
   }
 }
