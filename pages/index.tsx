@@ -1,28 +1,18 @@
 import {useState, useEffect} from 'react'
-import {Layout, Switch, Card, Typography, Row, Col, Spin, Button, Calendar} from 'antd'
+import {Layout, Switch, Card, Typography, Row, Col, Spin, Button} from 'antd'
 import 'antd/dist/antd.css';
 
 const {Header, Content} = Layout
 
-interface IData {
-    pong: string
-}
-
 export default function Home() {
 
-    const [loading, setLoading] = useState(false)
     const [soilReadings, setSoilReading] = useState([])
     const [soilReadingsLoading, setSoilReadingsLoading] = useState(false)
     const [rainReadingsLoading, setRainReadingsLoading] = useState(false)
     const [rainReadings, setRainReadings] = useState([])
 
-
-    const [data, setData] = useState<IData>({
-        pong: ''
-    })
-
     const toggleValve = (active: boolean) => {
-        fetch(`/api/valve?open=${active}`).then(res => res.json()).then(data => setData(data))
+        fetch(`/api/valve?open=${active}`).then(res => res.json())
     }
 
     const getSoilReadings = () => {
@@ -36,7 +26,11 @@ export default function Home() {
     }
 
     const readingOptimal = (reading: number): string => {
-        return (reading === 0) ? 'reading meets standards' : 'reading does not meet standards'
+        return (reading === 0) ? 'Reading meets requirement.' : 'Reading does not meet requirement.'
+    }
+
+    const currentlyRaining = (reading: number):string => {
+        return (reading === 0) ? 'Currently Raining' : 'Not raining.'
     }
 
     const initializeSystem = () => {
@@ -59,13 +53,13 @@ export default function Home() {
             <Content style={{height:'100vh'}}>
                 <Row style={{...rowStyle, marginTop: '2rem'}}>
                     <Col span={14} offset={4}>
-
+                    {/* placeholder */}
                     </Col>
                 </Row>
                 <Row style={rowStyle}>
                     <Col span={14} offset={4}>
                         <label htmlFor="switch" style={{marginRight: '8px'}}>Valve Open (Watering)</label>
-                        <Switch loading={loading} onChange={toggleValve}/>
+                        <Switch onChange={toggleValve}/>
                     </Col>
                 </Row>
                 <Row style={rowStyle}>
@@ -106,7 +100,7 @@ export default function Home() {
                             {!rainReadingsLoading && rainReadings.length ? (
                                 <ul>
                                     {rainReadings.map((reading, index) => (
-                                        <li key={String(reading + index)}>Sensor {index + 1}: {readingOptimal(reading)}</li>
+                                        <li key={String(reading + index)}>Sensor {index + 1}: {currentlyRaining(reading)}</li>
                                     ))}
                                 </ul>
                             ) : (

@@ -37,10 +37,17 @@ const runIrrigationSystem = async () => {
 
   const weatherResults = await getWeather(LATITUDE, LONGITUDE)
 
-  const chanceOfPrecipitation = Math.floor(((weatherResults.hourly.map(hourlyReading => hourlyReading.pop).reduce((a: number, b: number) => a + b, 0) / weatherResults.hourly.length) * 100))
+  const chanceOfPrecipitation = () => {
+    // for dev
+    if(weatherResults) {
+      return Math.floor(((weatherResults.hourly.map(hourlyReading => hourlyReading.pop).reduce((a: number, b: number) => a + b, 0) / weatherResults.hourly.length) * 100))
+    }
+
+    return 50
+  }
 
   timeSlots.forEach(async (slot, index) => {
-    if (!slot.active && !isRaining && isTimeBetween(slot.startTime, slot.valveOpenDuration) && (chanceOfPrecipitation < 90)) {
+    if (!slot.active && !isRaining && isTimeBetween(slot.startTime, slot.valveOpenDuration) && (chanceOfPrecipitation() < 90)) {
       timeSlots[index].active = true
 
       rainCheckTimer = setInterval(async () => {
