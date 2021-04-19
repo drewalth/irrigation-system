@@ -126,7 +126,7 @@ export default function Home() {
                 <div style={{ display: 'flex' }}>
                   <Spin />
                   <span style={{ marginLeft: '1rem' }}>
-                    Loading Soil Moisture Readings
+                    Loading Rain Sensor Readings
                   </span>
                 </div>
               )}
