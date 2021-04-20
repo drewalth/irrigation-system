@@ -23,6 +23,7 @@ let timeSlots = [
 
 let isRaining = false
 let rainCheckTimer
+let soilCheckTimer
 
 const { LATITUDE, LONGITUDE } = process.env
 
@@ -75,7 +76,6 @@ const runIrrigationSystem = async () => {
       }, 5000)
 
       soilCheckTimer = setInterval(async () => {
-        await soilSensors.getReadings()
         const soilReadings = await getSoilReadings()
 
         if (soilReadings.every((reading) => reading === 0)) {
