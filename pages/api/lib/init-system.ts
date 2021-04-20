@@ -1,4 +1,9 @@
-import { valveController, getWeather, rainSensor } from '../controllers'
+import {
+  valveController,
+  getWeather,
+  rainSensor,
+  getSoilReadings,
+} from '../controllers'
 import moment from 'moment'
 
 let systemInterval
@@ -66,6 +71,17 @@ const runIrrigationSystem = async () => {
           await valveController(false)
           timeSlots[index].active = false
           clearInterval(rainCheckTimer)
+        }
+      }, 5000)
+
+      soilCheckTimer = setInterval(async () => {
+        await soilSensors.getReadings()
+        const soilReadings = await getSoilReadings()
+
+        if (soilReadings.every((reading) => reading === 0)) {
+          await valveController(false)
+          timeSlots[index].active = false
+          clearInterval(soilCheckTimer)
         }
       }, 5000)
 
