@@ -9,9 +9,11 @@ generator client {
 
 model TimeSlot {
   id        Int @id @default(autoincrement())
+  name      String
   active    Boolean @default(false)
   startTime DateTime
   endTime   DateTime
+  interval  String @default("daily")
   createdAt DateTime? @default(now())
   updatedAt DateTime?
 }
