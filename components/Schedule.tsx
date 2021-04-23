@@ -8,6 +8,7 @@ import {
   Input,
   TimePicker,
   Select,
+  message,
 } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import moment from 'moment'
@@ -25,17 +26,9 @@ export const Schedule = () => {
     try {
       setTimeSlotsLoading(true)
       const result = await axios.get('/api/schedule').then((res) => res.data)
-
-      if (Array.isArray(result)) {
-        setTimeSlots(result)
-      } else {
-        const payload = Object.keys(result).reduce((acc, el) => {
-          return [...acc, el]
-        }, [])
-
-        setTimeSlots(payload)
-      }
+      setTimeSlots(result)
     } catch (e) {
+      message.error('Something went wrong...')
       console.log(e)
     } finally {
       setTimeSlotsLoading(false)
@@ -51,8 +44,10 @@ export const Schedule = () => {
       const result = await axios
         .post('/api/schedule', payload)
         .then((res) => res.data)
+      message.success('Time Slot Created')
       setTimeSlots([...timeSlots, result])
     } catch (e) {
+      message.error('Something went wrong...')
       console.log(e)
     }
   }
@@ -60,11 +55,12 @@ export const Schedule = () => {
   const deleteTimeSlot = async (slotId) => {
     console.log(slotId)
     try {
-      await axios
-        .delete(`/api/schedule?slotId=${slotId}`)
-        .then((res) => res.data)
-      setTimeSlots([...timeSlots.filter((slot) => slot.id !== slotId)])
+      await axios.delete(`/api/schedule?slotId=${slotId}`).then(() => {
+        message.success('Time Slot Deleted')
+        setTimeSlots(timeSlots.filter((slot) => slot.id !== slotId))
+      })
     } catch (e) {
+      message.error('Something went wrong...')
       console.log(e)
     }
   }
@@ -84,7 +80,13 @@ export const Schedule = () => {
       const result = await axios
         .post(`/api/schedule?slotId=${slotId}`, payload)
         .then((res) => res.data)
-      setTimeSlots([...timeSlots.filter((ts) => ts.id !== result.id), result])
+
+      const index = timeSlots.findIndex((t) => t.id === result.id)
+      const data = [...timeSlots]
+      data.splice(index, 1, result)
+
+      setTimeSlots(data)
+      message.success('Time Slot Updated')
     } catch (e) {
       console.log(e)
     }
@@ -145,7 +147,9 @@ export const Schedule = () => {
         }}
       >
         <Typography.Title level={5}>Schedule</Typography.Title>
-        <Button onClick={() => setModalVisible(true)}>Create</Button>
+        <Button onClick={() => setModalVisible(true)} type="primary">
+          New Time Slot
+        </Button>
       </div>
       {timeSlotsLoading && <Spin />}
       {!timeSlotsLoading && timeSlots.length > 0 && (
@@ -196,6 +200,7 @@ export const Schedule = () => {
             </Form.Item>
             <Form.Item>
               <Select
+                value={timeSlotForm.interval}
                 defaultValue="daily"
                 onChange={(interval) => {
                   setTimeSlotForm({
