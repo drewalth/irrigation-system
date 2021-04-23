@@ -1,4 +1,4 @@
-import twilio from 'twilio'
+import Twilio from 'twilio'
 const {
   TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN,
@@ -6,7 +6,7 @@ const {
   TWILIO_FROM_NUMBER,
 } = process.env
 // @ts-ignore
-const twilioClient = new twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+const twilioClient = new Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
 export const sms = async (body: string) => {
   twilioClient.messages

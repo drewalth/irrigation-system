@@ -1,6 +1,6 @@
 # irrigation-system
 
-[![Build Status](https://travis-ci.com/drewalth/irrigation-system.svg?branch=main)](https://travis-ci.com/drewalth/irrigation-system)
+[![Build Status](https://travis-ci.com/drewalth/irrigation-system.svg?branch=main)](https://travis-ci.com/drewalth/irrigation-system) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/7c069ab53e41404798e0ead12ca9d1d9)](https://www.codacy.com/gh/drewalth/irrigation-system/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=drewalth/irrigation-system&amp;utm_campaign=Badge_Grade)
 
 A [Next.js](https://nextjs.org/) app built with [Typescript](https://www.typescriptlang.org/) and [rpio](https://www.npmjs.com/package/rpio) to control a DIY irrigation system from a Raspberry Pi. Inspired by this guide on Instructables, [Raspberry Pi Controlled Irrigation System](https://www.instructables.com/Raspberry-Pi-Controlled-Irrigation-System/).
 
