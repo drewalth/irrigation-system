@@ -19,6 +19,7 @@ export default function Home() {
   const [rainReadingsLoading, setRainReadingsLoading] = useState(false)
   const [rainReadings, setRainReadings] = useState([])
   const [activeTab, setActiveTab] = useState(['1'])
+  const [windowWidth, setWindowWidth] = useState(0)
 
   const getSoilReadings = () => {
     setSoilReadingsLoading(true)
@@ -44,10 +45,16 @@ export default function Home() {
     initializeSystem()
     getRainReadings()
     getSoilReadings()
+
+    setWindowWidth(window.innerWidth)
+
+    window.addEventListener('resize', () => {
+      setWindowWidth(window.innerWidth)
+    })
   }, [])
 
   return (
-    <Layout>
+    <Layout style={{ minHeight: '100vh' }}>
       <Header className="header">
         <div className="logo">Irrigation System</div>
       </Header>
@@ -56,9 +63,12 @@ export default function Home() {
           className="site-layout-background"
           style={{ padding: '24px 0' }}
         >
-          <Sider className="site-layout-background" width={200}>
+          <Sider
+            className="site-layout-background"
+            width={200}
+            collapsed={windowWidth < 768}
+          >
             <Menu
-              mode="inline"
               defaultSelectedKeys={['1']}
               openKeys={activeTab}
               style={{ height: '100%' }}
@@ -71,7 +81,13 @@ export default function Home() {
                 Dashboard
               </Menu.Item>
               <SubMenu
-                onTitleClick={() => setActiveTab([...activeTab, '2'])}
+                onTitleClick={({ key }) => {
+                  if (key === '2' && activeTab.includes('2')) {
+                    setActiveTab(activeTab.filter((t) => t !== '2'))
+                  } else {
+                    setActiveTab([...activeTab, '2'])
+                  }
+                }}
                 key="2"
                 icon={<ToolOutlined />}
                 title="Sensors"
