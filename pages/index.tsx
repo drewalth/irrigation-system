@@ -69,6 +69,7 @@ export default function Home() {
             collapsed={windowWidth < 768}
           >
             <Menu
+              mode="inline"
               defaultSelectedKeys={['1']}
               openKeys={activeTab}
               style={{ height: '100%' }}
