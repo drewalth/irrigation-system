@@ -8,6 +8,14 @@ import moment from 'moment'
 
 let systemInterval
 
+/*
+  @TODO hook this up to db
+
+  - may (probably will) require change to prisma schema and/or timeslot CRUD.
+  - daily interval. ignore date, only concerned with time.
+  - other intervals. if not currently watering and last water time is great than 7 or 30 days.
+
+ */
 let timeSlots = [
   {
     startTime: '05:45:00',
