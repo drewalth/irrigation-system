@@ -1,19 +1,23 @@
 import { Row, Col, Typography, Spin, Switch } from 'antd'
-import { useState } from 'react'
 import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons'
 
-export const Dashboard = ({
-  soilReadings,
-  rainReadings,
-  soilReadingsLoading,
-  rainReadingsLoading,
-}) => {
-  const [valveOpen, setValveOpen] = useState(false)
+export const Dashboard = (props) => {
+  const {
+    socket,
+    valveOpen,
+    soilReadings,
+    rainReadings,
+    soilReadingsLoading,
+    rainReadingsLoading,
+  } = props
 
   const toggleValve = (open: boolean) => {
+    props.handleValveToggle(open)
     fetch(`/api/valve?open=${open}`)
       .then((res) => res.json())
-      .then(() => setValveOpen(open))
+      .then(({ watering }) => {
+        socket.emit('valveToggle', watering)
+      })
   }
 
   const getIcon = (value) => {
