@@ -8,7 +8,8 @@
     "dev": "export NODE_ENV=development && next dev",
     "build": "next build",
     "start": "export NODE_ENV=production && next start",
-    "format": "prettier --trailing-comma es5 --no-semi --single-quote --write \"**/*.{ts,tsx}\""
+    "format": "prettier --trailing-comma es5 --no-semi --single-quote --write \"**/*.{ts,tsx}\"",
+    "redis:start":  "docker run -p 6379:6379 --name irr-sys-redis -d redis"
   },
   "dependencies": {
     "@prisma/client": "^2.21.2",
